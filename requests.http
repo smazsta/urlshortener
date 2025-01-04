@@ -1,0 +1,20 @@
+### Define environment variables
+@host = http://localhost:8080
+
+### Shorten a URL
+POST {{host}}/shorten
+Content-Type: text/plain
+
+https://example.com
+
+### Redirect to the original URL
+GET {{host}}/abc123
+
+### Shorten another URL
+POST {{host}}/shorten
+Content-Type: text/plain
+
+https://another-example.com
+
+### Redirect to the second URL
+GET {{host}}/def456
