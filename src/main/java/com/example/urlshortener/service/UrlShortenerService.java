@@ -21,7 +21,6 @@ public class UrlShortenerService {
   private static final String CACHE_PREFIX = "url:";
 
   public String shortenUrl(String longUrl) {
-    // Sanitize the input URL
     String sanitizedUrl = StringSanitizer.sanitize(longUrl);
 
     long id = urlRepository.getNextId();
@@ -66,7 +65,6 @@ public class UrlShortenerService {
   }
 
   public boolean updateUrl(String shortCode, String newLongUrl) {
-    // Sanitize the new long URL
     String sanitizedUrl = StringSanitizer.sanitize(newLongUrl);
 
     Optional<UrlMapping> urlMapping = urlRepository.findByShortCode(shortCode);
