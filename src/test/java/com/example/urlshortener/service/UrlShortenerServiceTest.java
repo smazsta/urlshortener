@@ -1,7 +1,9 @@
 package com.example.urlshortener.service;
 
+import com.example.urlshortener.exception.EncodingException;
 import com.example.urlshortener.model.UrlMapping;
 import com.example.urlshortener.repository.UrlRepository;
+import com.example.urlshortener.utils.ShortCodeGenerator;
 import com.example.urlshortener.utils.StringSanitizer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -25,6 +27,9 @@ public class UrlShortenerServiceTest {
   @Mock
   private CacheService cacheService;
 
+  @Mock
+  private ShortCodeGenerator shortCodeGenerator;
+
   @InjectMocks
   private UrlShortenerService urlShortenerService;
 
@@ -35,12 +40,13 @@ public class UrlShortenerServiceTest {
     @DisplayName("Success")
     void testShortenUrl_Success() {
       String longUrl = "https://example.com";
-      when(urlRepository.getNextId()).thenReturn(1L);
-      when(urlRepository.existsByShortCode(anyString())).thenReturn(false);
+      String shortCode = "abc123";
+      when(shortCodeGenerator.generate()).thenReturn(shortCode);
 
-      String shortCode = urlShortenerService.shortenUrl(longUrl);
+      String result = urlShortenerService.shortenUrl(longUrl);
 
-      assertNotNull(shortCode);
+      assertNotNull(result);
+      assertEquals(shortCode, result);
       verify(urlRepository, times(1)).save(any(UrlMapping.class));
     }
 
@@ -49,15 +55,28 @@ public class UrlShortenerServiceTest {
     void testShortenUrl_SanitizesInput() {
       String longUrl = "https://example.com/<script>alert('XSS')</script>";
       String sanitizedUrl = StringSanitizer.sanitize(longUrl);
-      when(urlRepository.getNextId()).thenReturn(1L);
-      when(urlRepository.existsByShortCode(anyString())).thenReturn(false);
+      String shortCode = "abc123";
+      when(shortCodeGenerator.generate()).thenReturn(shortCode);
 
-      String shortCode = urlShortenerService.shortenUrl(longUrl);
+      String result = urlShortenerService.shortenUrl(longUrl);
 
-      assertNotNull(shortCode);
+      assertNotNull(result);
       verify(urlRepository, times(1)).save(argThat(urlMapping ->
           urlMapping.getLongUrl().equals(sanitizedUrl)
       ));
+    }
+
+    @Test
+    @DisplayName("Encoding Failure - Throw Exception")
+    void testShortenUrl_EncodingFailure() {
+      String longUrl = "https://example.com";
+      when(shortCodeGenerator.generate()).thenThrow(new RuntimeException("Encoding failed"));
+
+      EncodingException exception = assertThrows(EncodingException.class,
+          () -> urlShortenerService.shortenUrl(longUrl));
+
+      assertEquals("Failed to generate a unique short code.", exception.getMessage());
+      verify(urlRepository, never()).save(any(UrlMapping.class));
     }
   }
 

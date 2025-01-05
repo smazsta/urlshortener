@@ -1,11 +1,9 @@
 package com.example.urlshortener.service;
 
-import com.example.urlshortener.exception.CacheFailureException;
-import com.example.urlshortener.exception.DatabaseConnectionException;
 import com.example.urlshortener.exception.EncodingException;
 import com.example.urlshortener.model.UrlMapping;
 import com.example.urlshortener.repository.UrlRepository;
-import com.example.urlshortener.utils.Base62Encoder;
+import com.example.urlshortener.utils.ShortCodeGenerator;
 import com.example.urlshortener.utils.StringSanitizer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,30 +21,24 @@ public class UrlShortenerService {
   @Autowired
   private CacheService cacheService;
 
+  @Autowired
+  private ShortCodeGenerator shortCodeGenerator;
+
   private static final String CACHE_PREFIX = "url:";
 
   public String shortenUrl(String longUrl) {
     try {
       log.debug("Shortening URL: {}", longUrl);
       String sanitizedUrl = StringSanitizer.sanitize(longUrl);
-      long id = urlRepository.getNextId();
-      String shortCode;
-
-      do {
-        shortCode = Base62Encoder.encode(id);
-      } while (urlRepository.existsByShortCode(shortCode));
-
+      String shortCode = shortCodeGenerator.generate();
       UrlMapping urlMapping = new UrlMapping(shortCode, sanitizedUrl);
       urlRepository.save(urlMapping);
 
       log.info("Successfully shortened URL: {} -> {}", longUrl, shortCode);
       return shortCode;
-    } catch (IllegalArgumentException e) {
-      log.error("Encoding error while shortening URL: {}", longUrl, e);
-      throw new EncodingException("Failed to encode URL: " + e.getMessage());
     } catch (Exception e) {
-      log.error("Database connection error while shortening URL: {}", longUrl, e);
-      throw new DatabaseConnectionException("Failed to connect to the database");
+      log.error("Error while shortening URL: {}", longUrl, e);
+      throw new EncodingException("Failed to generate a unique short code.");
     }
   }
 
@@ -60,17 +52,12 @@ public class UrlShortenerService {
     }
 
     log.debug("Cache miss for short code: {}", shortCode);
-    try {
-      Optional<UrlMapping> urlMapping = urlRepository.findByShortCode(shortCode);
-      if (urlMapping.isPresent()) {
-        longUrl = urlMapping.get().getLongUrl();
-        cacheService.put(cacheKey, longUrl);
-        log.info("Retrieved long URL from database: {} -> {}", shortCode, longUrl);
-        return longUrl;
-      }
-    } catch (Exception e) {
-      log.error("Cache or database failure while retrieving long URL for short code: {}", shortCode, e);
-      throw new CacheFailureException("Failed to retrieve data from cache or database");
+    Optional<UrlMapping> urlMapping = urlRepository.findByShortCode(shortCode);
+    if (urlMapping.isPresent()) {
+      longUrl = urlMapping.get().getLongUrl();
+      cacheService.put(cacheKey, longUrl);
+      log.info("Retrieved long URL from database: {} -> {}", shortCode, longUrl);
+      return longUrl;
     }
 
     log.warn("Long URL not found for short code: {}", shortCode);
