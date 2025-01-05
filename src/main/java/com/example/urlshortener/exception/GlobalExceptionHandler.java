@@ -1,5 +1,6 @@
 package com.example.urlshortener.exception;
 
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -26,5 +27,12 @@ public class GlobalExceptionHandler {
     Map<String, String> error = new HashMap<>();
     error.put("message", ex.getMessage());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+  }
+
+  @ExceptionHandler(RequestNotPermitted.class)
+  public ResponseEntity<String> handleRateLimiterException(RequestNotPermitted ex) {
+    return ResponseEntity
+        .status(HttpStatus.TOO_MANY_REQUESTS)
+        .body("Too many requests - please try again later.");
   }
 }

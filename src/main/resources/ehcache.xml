@@ -1,0 +1,7 @@
+<config xmlns="http://www.ehcache.org/v3">
+  <cache alias="rate-limit-buckets">
+    <resources>
+      <heap unit="entries">1000</heap>
+    </resources>
+  </cache>
+</config>

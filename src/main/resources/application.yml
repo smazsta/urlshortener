@@ -1,0 +1,83 @@
+# Default configuration (no profile)
+server:
+  port: 8080
+spring:
+  profiles:
+    active: spring, local
+logging:
+  level:
+    org:springframework.boot.context.properties: DEBUG
+
+---
+# Bucket4j profile
+spring:
+  config:
+    activate:
+      on-profile: bucket4j
+bucket4j:
+  rate-limits:
+    default:
+      capacity: 100
+      refill:
+        tokens: 100
+        duration: 1m
+
+---
+# Resilience4j profile
+spring:
+  config:
+    activate:
+      on-profile: resilience4j
+resilience4j:
+  ratelimiter:
+    instances:
+      urlShortenerRateLimiter:
+        limit-for-period: 100
+        limit-refresh-period: 1m
+        timeout-duration: 0
+
+---
+# Spring Boot Rate Limiter profile
+spring:
+  config:
+    activate:
+      on-profile: spring
+  cloud:
+    gateway:
+      routes:
+        - id: url-shortener-service
+          uri: http://localhost:8080
+          predicates:
+            - Path=/api/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      ssl: false
+      timeout: 2000
+      lettuce:
+        pool:
+          enabled: true
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+---
+# Dev profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+---
+# Local profile
+spring:
+  config:
+    activate:
+      on-profile: local

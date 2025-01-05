@@ -31,12 +31,30 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 
+	implementation 'org.ehcache:ehcache'
+
+	// Bucket4j
+	implementation 'com.github.vladimir-bukhtoyarov:bucket4j-core:7.6.0'
+	implementation 'com.github.vladimir-bukhtoyarov:bucket4j-jcache:7.6.0'
+	implementation 'javax.cache:cache-api:1.1.1'
+
+	// Resilience4j
+	implementation 'io.github.resilience4j:resilience4j-spring-boot2:2.1.0'
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+	// Spring Boot Rate Limiter (via Spring Cloud Gateway)
+	implementation 'org.springframework.cloud:spring-cloud-starter-gateway:4.2.0'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+
 	// Database (H2 for local testing)
 	runtimeOnly 'com.h2database:h2'
 
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	compileOnly 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
 	// Testing
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
