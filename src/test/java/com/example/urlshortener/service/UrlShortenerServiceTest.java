@@ -45,7 +45,7 @@ public class UrlShortenerServiceTest {
     }
 
     @Test
-    @DisplayName("Sanitizes Input URL")
+    @DisplayName("Sanitizes Input URL During Shortening")
     void testShortenUrl_SanitizesInput() {
       String longUrl = "https://example.com/<script>alert('XSS')</script>";
       String sanitizedUrl = StringSanitizer.sanitize(longUrl);
@@ -84,7 +84,8 @@ public class UrlShortenerServiceTest {
       String shortCode = "abc123";
       String longUrl = "https://example.com";
       when(cacheService.get("url:" + shortCode)).thenReturn(null);
-      when(urlRepository.findByShortCode(shortCode)).thenReturn(Optional.of(new UrlMapping(shortCode, longUrl)));
+      when(urlRepository.findByShortCode(shortCode)).thenReturn(
+          Optional.of(new UrlMapping(shortCode, longUrl)));
 
       String result = urlShortenerService.getLongUrl(shortCode);
 
@@ -117,7 +118,8 @@ public class UrlShortenerServiceTest {
     @DisplayName("Success")
     void testDeleteUrl_Success() {
       String shortCode = "abc123";
-      when(urlRepository.findByShortCode(shortCode)).thenReturn(Optional.of(new UrlMapping(shortCode, "https://example.com")));
+      when(urlRepository.findByShortCode(shortCode)).thenReturn(
+          Optional.of(new UrlMapping(shortCode, "https://example.com")));
 
       boolean result = urlShortenerService.deleteUrl(shortCode);
 
@@ -148,7 +150,8 @@ public class UrlShortenerServiceTest {
     void testUpdateUrl_Success() {
       String shortCode = "abc123";
       String newLongUrl = "https://new-example.com";
-      when(urlRepository.findByShortCode(shortCode)).thenReturn(Optional.of(new UrlMapping(shortCode, "https://example.com")));
+      when(urlRepository.findByShortCode(shortCode)).thenReturn(
+          Optional.of(new UrlMapping(shortCode, "https://example.com")));
 
       boolean result = urlShortenerService.updateUrl(shortCode, newLongUrl);
 
@@ -169,6 +172,23 @@ public class UrlShortenerServiceTest {
       assertFalse(result);
       verify(urlRepository, never()).save(any());
       verify(cacheService, never()).invalidate("url:" + shortCode);
+    }
+
+    @Test
+    @DisplayName("Sanitizes Input URL During Update")
+    void testUpdateUrl_SanitizesInput() {
+      String shortCode = "abc123";
+      String newLongUrl = "https://example.com/<script>alert('XSS')</script>";
+      String sanitizedUrl = StringSanitizer.sanitize(newLongUrl);
+      when(urlRepository.findByShortCode(shortCode)).thenReturn(
+          Optional.of(new UrlMapping(shortCode, "https://example.com")));
+
+      boolean result = urlShortenerService.updateUrl(shortCode, newLongUrl);
+
+      assertTrue(result);
+      verify(urlRepository, times(1)).save(argThat(urlMapping ->
+          urlMapping.getLongUrl().equals(sanitizedUrl)
+      ));
     }
   }
 }

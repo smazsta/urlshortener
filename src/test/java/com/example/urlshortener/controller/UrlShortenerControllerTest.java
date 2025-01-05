@@ -2,6 +2,9 @@ package com.example.urlshortener.controller;
 
 import com.example.urlshortener.config.TestSecurityConfig;
 import com.example.urlshortener.dto.UrlRequest;
+import com.example.urlshortener.exception.CacheFailureException;
+import com.example.urlshortener.exception.DatabaseConnectionException;
+import com.example.urlshortener.exception.EncodingException;
 import com.example.urlshortener.service.UrlShortenerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -104,6 +107,38 @@ public class UrlShortenerControllerTest {
           .andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.url").value("URL cannot be blank"));
     }
+
+    @Test
+    @DisplayName("Database Connection Issue - Returns 503 Service Unavailable")
+    void testShortenUrl_DatabaseConnectionIssue() throws Exception {
+      UrlRequest request = new UrlRequest();
+      request.setUrl("https://example.com");
+
+      when(urlShortenerService.shortenUrl(request.getUrl()))
+          .thenThrow(new DatabaseConnectionException("Database unavailable"));
+
+      mockMvc.perform(post("/shorten")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(objectMapper.writeValueAsString(request)))
+          .andExpect(status().isServiceUnavailable())
+          .andExpect(jsonPath("$.message").value("Database connection error: Database unavailable"));
+    }
+
+    @Test
+    @DisplayName("Encoding Error - Returns 500 Internal Server Error")
+    void testShortenUrl_EncodingError() throws Exception {
+      UrlRequest request = new UrlRequest();
+      request.setUrl("https://example.com");
+
+      when(urlShortenerService.shortenUrl(request.getUrl()))
+          .thenThrow(new EncodingException("Invalid encoding"));
+
+      mockMvc.perform(post("/shorten")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(objectMapper.writeValueAsString(request)))
+          .andExpect(status().isInternalServerError())
+          .andExpect(jsonPath("$.message").value("Encoding error: Invalid encoding"));
+    }
   }
 
   @Nested
@@ -182,6 +217,17 @@ public class UrlShortenerControllerTest {
 
       mockMvc.perform(get("/abc123"))
           .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Cache Failure - Returns 500 Internal Server Error")
+    void testGetLongUrl_CacheFailure() throws Exception {
+      when(urlShortenerService.getLongUrl("abc123"))
+          .thenThrow(new CacheFailureException("Cache unavailable"));
+
+      mockMvc.perform(get("/abc123"))
+          .andExpect(status().isInternalServerError())
+          .andExpect(jsonPath("$.message").value("Cache failure: Cache unavailable"));
     }
   }
 
