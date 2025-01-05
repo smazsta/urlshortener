@@ -1,11 +1,13 @@
 package com.example.urlshortener.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Slf4j
 @Service
 public class RequestProducerService {
 
@@ -21,6 +23,7 @@ public class RequestProducerService {
 
   public long simulateHighTraffic() {
     long startTime = System.currentTimeMillis();
+    log.info("Starting high traffic simulation");
 
     try {
       final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_COUNT);
@@ -42,6 +45,7 @@ public class RequestProducerService {
                   failureCount.incrementAndGet();
                 }
               } catch (Exception e) {
+                log.error("Error during high traffic simulation: {}", e.getMessage(), e);
                 failureCount.incrementAndGet();
               } finally {
                 latch.countDown();
@@ -52,28 +56,28 @@ public class RequestProducerService {
       }
 
       if (!latch.await(1, TimeUnit.MINUTES)) {
-        System.err.println("Timeout: Some requests did not complete in time.");
+        log.warn("Timeout: Some requests did not complete in time.");
       }
 
       executorService.shutdown();
       try {
         if (!executorService.awaitTermination(1, TimeUnit.MINUTES)) {
-          System.err.println("ExecutorService did not terminate in time.");
+          log.warn("ExecutorService did not terminate in time.");
         }
       } catch (InterruptedException e) {
-        System.err.println("ExecutorService shutdown interrupted: " + e.getMessage());
+        log.error("ExecutorService shutdown interrupted: {}", e.getMessage(), e);
       }
     } catch (InterruptedException e) {
-      System.err.println("High traffic simulation interrupted: " + e.getMessage());
+      log.error("High traffic simulation interrupted: {}", e.getMessage(), e);
     }
 
     long endTime = System.currentTimeMillis();
     long totalTime = endTime - startTime;
 
-    System.out.println("High traffic simulation completed.");
-    System.out.println("Successful requests: " + successCount.get());
-    System.out.println("Failed requests: " + failureCount.get());
-    System.out.println("Total time taken: " + totalTime + " ms");
+    log.info("High traffic simulation completed.");
+    log.info("Successful requests: {}", successCount.get());
+    log.info("Failed requests: {}", failureCount.get());
+    log.info("Total time taken: {} ms", totalTime);
 
     return totalTime;
   }
