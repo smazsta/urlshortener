@@ -31,6 +31,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 
+	// URL validation
+	implementation 'commons-validator:commons-validator:1.7'
+
 	// Database (H2 for local testing)
 	runtimeOnly 'com.h2database:h2'
 

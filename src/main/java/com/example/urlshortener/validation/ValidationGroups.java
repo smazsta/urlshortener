@@ -1,4 +1,4 @@
-package com.example.urlshortener.annotation;
+package com.example.urlshortener.validation;
 
 public interface ValidationGroups {
   interface NotNullGroup {}

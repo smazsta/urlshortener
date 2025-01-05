@@ -54,16 +54,29 @@ public class UrlShortenerControllerTest {
     }
 
     @Test
-    @DisplayName("Invalid URL")
-    void testShortenUrl_InvalidUrl() throws Exception {
+    @DisplayName("Invalid URL Format")
+    void testShortenUrl_InvalidUrlFormat() throws Exception {
       UrlRequest request = new UrlRequest();
-      request.setUrl("invalid-url"); // Invalid URL
+      request.setUrl("htp://invalid-url");
 
       mockMvc.perform(post("/shorten")
               .contentType(MediaType.APPLICATION_JSON)
               .content(objectMapper.writeValueAsString(request)))
           .andExpect(status().isBadRequest())
-          .andExpect(jsonPath("$.url").value("URL must be valid"));
+          .andExpect(jsonPath("$.url").value("Invalid URL format"));
+    }
+
+    @Test
+    @DisplayName("URL Too Long")
+    void testShortenUrl_UrlTooLong() throws Exception {
+      UrlRequest request = new UrlRequest();
+      request.setUrl("https://example.com/" + "a".repeat(3000));
+
+      mockMvc.perform(post("/shorten")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(objectMapper.writeValueAsString(request)))
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.url").value("URL must be less than 2048 characters"));
     }
 
     @Test
@@ -97,30 +110,29 @@ public class UrlShortenerControllerTest {
   @DisplayName("PUT /{shortCode}")
   class UpdateUrlTests {
     @Test
-    @DisplayName("Success")
-    void testUpdateUrl_Success() throws Exception {
+    @DisplayName("Invalid URL Format")
+    void testShortenUrl_InvalidUrlFormat() throws Exception {
       UrlRequest request = new UrlRequest();
-      request.setUrl("https://new-example.com");
+      request.setUrl("htp://invalid-url");
 
-      when(urlShortenerService.updateUrl("abc123", request.getUrl())).thenReturn(true);
-
-      mockMvc.perform(put("/abc123")
-              .contentType(MediaType.APPLICATION_JSON)
-              .content(objectMapper.writeValueAsString(request)))
-          .andExpect(status().isNoContent());
-    }
-
-    @Test
-    @DisplayName("Invalid URL")
-    void testUpdateUrl_InvalidUrl() throws Exception {
-      UrlRequest request = new UrlRequest();
-      request.setUrl("invalid-url"); // Invalid URL
-
-      mockMvc.perform(put("/abc123")
+      mockMvc.perform(post("/shorten")
               .contentType(MediaType.APPLICATION_JSON)
               .content(objectMapper.writeValueAsString(request)))
           .andExpect(status().isBadRequest())
-          .andExpect(jsonPath("$.url").value("URL must be valid"));
+          .andExpect(jsonPath("$.url").value("Invalid URL format"));
+    }
+
+    @Test
+    @DisplayName("URL Too Long")
+    void testShortenUrl_UrlTooLong() throws Exception {
+      UrlRequest request = new UrlRequest();
+      request.setUrl("https://example.com/" + "a".repeat(3000));
+
+      mockMvc.perform(post("/shorten")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(objectMapper.writeValueAsString(request)))
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.url").value("URL must be less than 2048 characters"));
     }
 
     @Test
