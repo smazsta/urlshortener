@@ -1,11 +1,14 @@
+/*
+ * Copyright (C) Smazsta, Inc.
+ * All Rights Reserved.
+ */
 package com.example.urlshortener.service;
-
-import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import org.springframework.stereotype.Service;
 
 @Service
 public class CacheService {

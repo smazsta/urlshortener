@@ -1,11 +1,15 @@
+/*
+ * Copyright (C) Smazsta, Inc.
+ * All Rights Reserved.
+ */
 package com.example.urlshortener.utils;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class ShortCodeGeneratorTest {

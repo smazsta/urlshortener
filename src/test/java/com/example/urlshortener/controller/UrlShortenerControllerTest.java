@@ -1,4 +1,12 @@
+/*
+ * Copyright (C) Smazsta, Inc.
+ * All Rights Reserved.
+ */
 package com.example.urlshortener.controller;
+
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.example.urlshortener.config.TestSecurityConfig;
 import com.example.urlshortener.dto.UrlRequest;
@@ -18,10 +26,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UrlShortenerController.class)
 @Import(TestSecurityConfig.class)
@@ -49,7 +53,7 @@ public class UrlShortenerControllerTest {
 
       when(urlShortenerService.shortenUrl(request.getUrl())).thenReturn("abc123");
 
-      mockMvc.perform(post("/shorten")
+      mockMvc.perform(post("/api/shorten")
               .contentType(MediaType.APPLICATION_JSON)
               .content(objectMapper.writeValueAsString(request)))
           .andExpect(status().isOk())
@@ -62,7 +66,7 @@ public class UrlShortenerControllerTest {
       UrlRequest request = new UrlRequest();
       request.setUrl("htp://invalid-url");
 
-      mockMvc.perform(post("/shorten")
+      mockMvc.perform(post("/api/shorten")
               .contentType(MediaType.APPLICATION_JSON)
               .content(objectMapper.writeValueAsString(request)))
           .andExpect(status().isBadRequest())
@@ -75,7 +79,7 @@ public class UrlShortenerControllerTest {
       UrlRequest request = new UrlRequest();
       request.setUrl("https://example.com/" + "a".repeat(3000));
 
-      mockMvc.perform(post("/shorten")
+      mockMvc.perform(post("/api/shorten")
               .contentType(MediaType.APPLICATION_JSON)
               .content(objectMapper.writeValueAsString(request)))
           .andExpect(status().isBadRequest())
@@ -88,7 +92,7 @@ public class UrlShortenerControllerTest {
       UrlRequest request = new UrlRequest();
       request.setUrl(null); // Null URL
 
-      mockMvc.perform(post("/shorten")
+      mockMvc.perform(post("/api/shorten")
               .contentType(MediaType.APPLICATION_JSON)
               .content(objectMapper.writeValueAsString(request)))
           .andExpect(status().isBadRequest())
@@ -101,7 +105,7 @@ public class UrlShortenerControllerTest {
       UrlRequest request = new UrlRequest();
       request.setUrl(""); // Blank URL
 
-      mockMvc.perform(post("/shorten")
+      mockMvc.perform(post("/api/shorten")
               .contentType(MediaType.APPLICATION_JSON)
               .content(objectMapper.writeValueAsString(request)))
           .andExpect(status().isBadRequest())
@@ -117,7 +121,7 @@ public class UrlShortenerControllerTest {
       when(urlShortenerService.shortenUrl(request.getUrl()))
           .thenThrow(new DatabaseConnectionException("Database unavailable"));
 
-      mockMvc.perform(post("/shorten")
+      mockMvc.perform(post("/api/shorten")
               .contentType(MediaType.APPLICATION_JSON)
               .content(objectMapper.writeValueAsString(request)))
           .andExpect(status().isServiceUnavailable())
@@ -133,7 +137,7 @@ public class UrlShortenerControllerTest {
       when(urlShortenerService.shortenUrl(request.getUrl()))
           .thenThrow(new EncodingException("Invalid encoding"));
 
-      mockMvc.perform(post("/shorten")
+      mockMvc.perform(post("/api/shorten")
               .contentType(MediaType.APPLICATION_JSON)
               .content(objectMapper.writeValueAsString(request)))
           .andExpect(status().isInternalServerError())
@@ -150,7 +154,7 @@ public class UrlShortenerControllerTest {
       UrlRequest request = new UrlRequest();
       request.setUrl("htp://invalid-url");
 
-      mockMvc.perform(post("/shorten")
+      mockMvc.perform(post("/api/shorten")
               .contentType(MediaType.APPLICATION_JSON)
               .content(objectMapper.writeValueAsString(request)))
           .andExpect(status().isBadRequest())
@@ -163,7 +167,7 @@ public class UrlShortenerControllerTest {
       UrlRequest request = new UrlRequest();
       request.setUrl("https://example.com/" + "a".repeat(3000));
 
-      mockMvc.perform(post("/shorten")
+      mockMvc.perform(post("/api/shorten")
               .contentType(MediaType.APPLICATION_JSON)
               .content(objectMapper.writeValueAsString(request)))
           .andExpect(status().isBadRequest())
@@ -176,7 +180,7 @@ public class UrlShortenerControllerTest {
       UrlRequest request = new UrlRequest();
       request.setUrl(null); // Null URL
 
-      mockMvc.perform(put("/abc123")
+      mockMvc.perform(put("/api/abc123")
               .contentType(MediaType.APPLICATION_JSON)
               .content(objectMapper.writeValueAsString(request)))
           .andExpect(status().isBadRequest())
@@ -189,7 +193,7 @@ public class UrlShortenerControllerTest {
       UrlRequest request = new UrlRequest();
       request.setUrl(""); // Blank URL
 
-      mockMvc.perform(put("/abc123")
+      mockMvc.perform(put("/api/abc123")
               .contentType(MediaType.APPLICATION_JSON)
               .content(objectMapper.writeValueAsString(request)))
           .andExpect(status().isBadRequest())
@@ -205,7 +209,7 @@ public class UrlShortenerControllerTest {
     void testRedirect_Success() throws Exception {
       when(urlShortenerService.getLongUrl("abc123")).thenReturn("https://example.com");
 
-      mockMvc.perform(get("/abc123"))
+      mockMvc.perform(get("/api/abc123"))
           .andExpect(status().isFound())
           .andExpect(header().string("Location", "https://example.com"));
     }
@@ -215,7 +219,7 @@ public class UrlShortenerControllerTest {
     void testRedirect_NotFound() throws Exception {
       when(urlShortenerService.getLongUrl("abc123")).thenReturn(null);
 
-      mockMvc.perform(get("/abc123"))
+      mockMvc.perform(get("/api/abc123"))
           .andExpect(status().isNotFound());
     }
 
@@ -225,7 +229,7 @@ public class UrlShortenerControllerTest {
       when(urlShortenerService.getLongUrl("abc123"))
           .thenThrow(new CacheFailureException("Cache unavailable"));
 
-      mockMvc.perform(get("/abc123"))
+      mockMvc.perform(get("/api/abc123"))
           .andExpect(status().isInternalServerError())
           .andExpect(jsonPath("$.message").value("Cache failure: Cache unavailable"));
     }
@@ -239,7 +243,7 @@ public class UrlShortenerControllerTest {
     void testDeleteUrl_Success() throws Exception {
       when(urlShortenerService.deleteUrl("abc123")).thenReturn(true);
 
-      mockMvc.perform(delete("/abc123"))
+      mockMvc.perform(delete("/api/abc123"))
           .andExpect(status().isNoContent());
     }
 
@@ -248,7 +252,7 @@ public class UrlShortenerControllerTest {
     void testDeleteUrl_NotFound() throws Exception {
       when(urlShortenerService.deleteUrl("abc123")).thenReturn(false);
 
-      mockMvc.perform(delete("/abc123"))
+      mockMvc.perform(delete("/api/abc123"))
           .andExpect(status().isNotFound());
     }
   }

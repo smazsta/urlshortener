@@ -1,11 +1,14 @@
+/*
+ * Copyright (C) Smazsta, Inc.
+ * All Rights Reserved.
+ */
 package com.example.urlshortener.repository;
 
 import com.example.urlshortener.model.UrlMapping;
-import org.springframework.stereotype.Repository;
-
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class UrlRepository {

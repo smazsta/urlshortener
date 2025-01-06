@@ -1,11 +1,15 @@
-package com.example.urlshortener.service;
+/*
+ * Copyright (C) Smazsta, Inc.
+ * All Rights Reserved.
+ */
+package com.example.urlshortener.perftest;
 
+import com.example.urlshortener.service.UrlShortenerService;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service

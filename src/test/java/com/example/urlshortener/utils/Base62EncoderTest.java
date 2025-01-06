@@ -1,9 +1,13 @@
+/*
+ * Copyright (C) Smazsta, Inc.
+ * All Rights Reserved.
+ */
 package com.example.urlshortener.utils;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Base62EncoderTest {
 

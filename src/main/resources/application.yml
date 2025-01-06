@@ -1,3 +1,20 @@
-# Server configuration
-server.port=8080
+server:
+  port: 8080 # Port on which the application will run
 
+# Application metadata
+spring:
+  application:
+    name: url-shortener # Name of the application
+  profiles:
+    active:
+      - local
+
+# Swagger (OpenAPI) configuration
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html # Path where Swagger UI will be accessible
+    operationsSorter: alpha # Sort operations alphabetically within each tag
+    tagsSorter: alpha # Sort tags alphabetically in the Swagger UI
+    enabled: true
+  api-docs:
+    enabled: true # Enable OpenAPI documentation generation

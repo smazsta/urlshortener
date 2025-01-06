@@ -1,4 +1,11 @@
+/*
+ * Copyright (C) Smazsta, Inc.
+ * All Rights Reserved.
+ */
 package com.example.urlshortener.config;
+
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 import com.example.urlshortener.controller.UrlShortenerController;
 import com.example.urlshortener.service.UrlShortenerService;
@@ -12,9 +19,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
 @WebMvcTest(UrlShortenerController.class)
 @Import(CorsConfig.class)
@@ -30,7 +34,7 @@ public class CorsConfigTest {
   @Test
   @DisplayName("Preflight request from allowed origin should return CORS headers")
   public void testCorsHeadersForAllowedOrigin() throws Exception {
-    mockMvc.perform(MockMvcRequestBuilders.options("/example-endpoint")
+    mockMvc.perform(MockMvcRequestBuilders.options("/api/shorten")
             .header("Origin", "https://trusted-domain.com")
             .header("Access-Control-Request-Method", "POST")
             .header("Access-Control-Request-Headers", "Content-Type"))
@@ -50,7 +54,7 @@ public class CorsConfigTest {
   @Test
   @DisplayName("Preflight request from disallowed origin should return 403 Forbidden")
   public void testCorsHeadersForDisallowedOrigin() throws Exception {
-    mockMvc.perform(MockMvcRequestBuilders.options("/example-endpoint")
+    mockMvc.perform(MockMvcRequestBuilders.options("/api/shorten")
             .header("Origin", "https://untrusted-domain.com")
             .header("Access-Control-Request-Method", "POST")
             .header("Access-Control-Request-Headers", "Content-Type"))
@@ -64,7 +68,7 @@ public class CorsConfigTest {
 
     String jsonPayload = "{ \"url\": \"https://example.com\" }";
 
-    mockMvc.perform(MockMvcRequestBuilders.post("/shorten")
+    mockMvc.perform(MockMvcRequestBuilders.post("/api/shorten")
             .header("Origin", "https://trusted-domain.com")
             .contentType("application/json")
             .content(jsonPayload)) // Send valid JSON

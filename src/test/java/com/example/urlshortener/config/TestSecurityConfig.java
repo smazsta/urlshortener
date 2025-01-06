@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) Smazsta, Inc.
+ * All Rights Reserved.
+ */
 package com.example.urlshortener.config;
 
 import org.springframework.context.annotation.Bean;

@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) Smazsta, Inc.
+ * All Rights Reserved.
+ */
 package com.example.urlshortener.utils;
 
 public class Base62Encoder {
