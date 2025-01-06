@@ -60,7 +60,7 @@ public class CorsConfigTest {
   @Test
   @DisplayName("Actual request from allowed origin should include CORS headers")
   public void testCorsHeadersForActualRequest() throws Exception {
-    when(urlShortenerService.shortenUrl(anyString())).thenReturn("abc123");
+    when(urlShortenerService.shortenUrl(anyString(), anyString())).thenReturn("abc123");
 
     String jsonPayload = "{ \"url\": \"https://example.com\" }";
 

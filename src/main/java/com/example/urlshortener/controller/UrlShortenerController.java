@@ -18,7 +18,7 @@ public class UrlShortenerController implements UrlShortenerResource {
 
   @Override
   public ResponseEntity<String> shortenUrl(UrlRequest request) {
-    String shortCode = urlShortenerService.shortenUrl(request.getUrl());
+    String shortCode = urlShortenerService.shortenUrl(request.getUrl(), request.getCustomCode());
     return ResponseEntity.ok(shortCode);
   }
 

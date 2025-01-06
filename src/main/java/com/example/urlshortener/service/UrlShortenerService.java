@@ -1,6 +1,6 @@
 package com.example.urlshortener.service;
 
-import com.example.urlshortener.exception.EncodingException;
+import com.example.urlshortener.exception.CustomCodeAlreadyInUseException;
 import com.example.urlshortener.model.UrlMapping;
 import com.example.urlshortener.repository.UrlRepository;
 import com.example.urlshortener.utils.ShortCodeGenerator;
@@ -25,18 +25,23 @@ public class UrlShortenerService {
 
   private static final String CACHE_PREFIX = "url:";
 
-  public String shortenUrl(String longUrl) {
-    try {
-      String sanitizedUrl = StringSanitizer.sanitize(longUrl);
-      String shortCode = shortCodeGenerator.generate();
-      UrlMapping urlMapping = new UrlMapping(shortCode, sanitizedUrl);
-      urlRepository.save(urlMapping);
+  public String shortenUrl(String longUrl, String customCode) {
+    String sanitizedUrl = StringSanitizer.sanitize(longUrl);
 
-      return shortCode;
-    } catch (Exception e) {
-      log.error("Error while shortening URL: {}", longUrl, e);
-      throw new EncodingException("Failed to generate a unique short code.");
+    if (customCode != null && !customCode.isEmpty()) {
+      if (urlRepository.findByShortCode(customCode).isPresent()) {
+        throw new CustomCodeAlreadyInUseException("Custom code is already in use.");
+      }
     }
+
+    String shortCode = (customCode != null && !customCode.isEmpty())
+        ? customCode
+        : shortCodeGenerator.generate();
+
+    UrlMapping urlMapping = new UrlMapping(shortCode, sanitizedUrl);
+    urlRepository.save(urlMapping);
+
+    return shortCode;
   }
 
   public String getLongUrl(String shortCode) {

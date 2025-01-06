@@ -36,7 +36,7 @@ public class RequestProducerService {
             CompletableFuture.runAsync(() -> {
               try {
                 String longUrl = BASE_URL + Thread.currentThread().threadId() + "-" + requestId;
-                String shortCode = urlShortenerService.shortenUrl(longUrl);
+                String shortCode = urlShortenerService.shortenUrl(longUrl, null);
                 String retrievedUrl = urlShortenerService.getLongUrl(shortCode);
 
                 if (longUrl.equals(retrievedUrl)) {
