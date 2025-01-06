@@ -5,11 +5,10 @@ import com.example.urlshortener.model.UrlMapping;
 import com.example.urlshortener.repository.UrlRepository;
 import com.example.urlshortener.utils.ShortCodeGenerator;
 import com.example.urlshortener.utils.StringSanitizer;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Slf4j
 @Service
