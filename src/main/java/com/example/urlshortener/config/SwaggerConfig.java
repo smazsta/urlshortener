@@ -1,7 +1,3 @@
-/*
- * Copyright (C) Smazsta, Inc.
- * All Rights Reserved.
- */
 package com.example.urlshortener.config;
 
 import io.swagger.v3.oas.models.OpenAPI;

@@ -1,7 +1,3 @@
-/*
- * Copyright (C) Smazsta, Inc.
- * All Rights Reserved.
- */
 package com.example.urlshortener.perftest;
 
 import com.example.urlshortener.UrlShortenerApplication;
@@ -16,14 +12,14 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("perf-test")
 public class PerfLauncherTest {
 
-    public static void main(String[] args) {
-        ConfigurableApplicationContext context = SpringApplication.run(UrlShortenerApplication.class, args);
-        RequestProducerService requestProducerService = context.getBean(RequestProducerService.class);
+  public static void main(String[] args) {
+    ConfigurableApplicationContext context = SpringApplication.run(UrlShortenerApplication.class,args);
+    RequestProducerService requestProducerService = context.getBean(RequestProducerService.class);
 
-        long totalTime = requestProducerService.simulateHighTraffic();
+    long totalTime = requestProducerService.simulateHighTraffic();
 
-        System.out.println("Total time taken for all requests: " + totalTime + " ms");
+    log.debug("Total time taken for all requests: {} ms", totalTime);
 
-        context.close();
-    }
+    context.close();
+  }
 }

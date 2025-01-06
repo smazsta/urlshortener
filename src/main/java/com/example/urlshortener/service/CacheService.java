@@ -1,9 +1,6 @@
-/*
- * Copyright (C) Smazsta, Inc.
- * All Rights Reserved.
- */
 package com.example.urlshortener.service;
 
+import com.example.urlshortener.config.CacheConfig;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -13,15 +10,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class CacheService {
 
-  private static final int MAX_CACHE_SIZE = 1000;
   private final Map<String, String> cache;
   private final ReadWriteLock lock = new ReentrantReadWriteLock();
+  private final int maxCacheSize;
 
-  public CacheService() {
-    this.cache = new LinkedHashMap<>(MAX_CACHE_SIZE, 0.75f, true) {
+  public CacheService(CacheConfig cacheConfig) {
+    this.maxCacheSize = cacheConfig.getMaxSize();
+    System.out.println("Cache size: " + maxCacheSize);
+    this.cache = new LinkedHashMap<>(maxCacheSize, 0.75f, true) {
       @Override
       protected boolean removeEldestEntry(Map.Entry<String, String> eldest) {
-        return size() > MAX_CACHE_SIZE;
+        return size() > maxCacheSize;
       }
     };
   }

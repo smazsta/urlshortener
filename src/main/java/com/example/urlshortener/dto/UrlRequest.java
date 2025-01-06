@@ -1,7 +1,3 @@
-/*
- * Copyright (C) Smazsta, Inc.
- * All Rights Reserved.
- */
 package com.example.urlshortener.dto;
 
 import com.example.urlshortener.validation.ValidUrl;

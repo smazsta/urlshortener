@@ -1,7 +1,3 @@
-/*
- * Copyright (C) Smazsta, Inc.
- * All Rights Reserved.
- */
 package com.example.urlshortener.perftest;
 
 import com.example.urlshortener.service.UrlShortenerService;

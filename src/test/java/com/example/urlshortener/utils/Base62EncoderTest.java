@@ -1,7 +1,3 @@
-/*
- * Copyright (C) Smazsta, Inc.
- * All Rights Reserved.
- */
 package com.example.urlshortener.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

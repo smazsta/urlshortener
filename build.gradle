@@ -70,6 +70,6 @@ spotless {
 		removeUnusedImports()
 		trimTrailingWhitespace()
 		importOrder 'static', ''
-		licenseHeader('/*\n * Copyright (C) Smazsta, Inc.\n * All Rights Reserved.\n */', 'package')
+//		licenseHeader('/*\n * Copyright (C) Smazsta, Inc.\n * All Rights Reserved.\n */', 'package')
 	}
 }
