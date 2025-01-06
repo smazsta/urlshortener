@@ -60,16 +60,65 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+def javaFiles = project.fileTree(project.rootDir) {
+	include '**/*.java'
+	exclude 'build/**'
+}
+
+def xmlFiles = project.fileTree(project.rootDir) {
+	include '**/*.xml'
+	exclude 'build/**'
+}
+
+def yamlFiles = project.fileTree(project.rootDir) {
+	include '**/*.yml'
+	include '**/*.yaml'
+	exclude 'build/**'
+}
+
+def markdownFiles = project.fileTree(project.rootDir) {
+	include '**/*.md'
+	exclude 'build/**'
+}
+
 spotless {
 	java {
-		target project.fileTree(project.rootDir) {
-			include '**/*.java'
-			exclude 'build/**'
-		}
-		indentWithSpaces()
+		target javaFiles
+		indentWithSpaces(2)
 		removeUnusedImports()
 		trimTrailingWhitespace()
 		importOrder 'static', ''
+		endWithNewline()
 //		licenseHeader('/*\n * Copyright (C) Smazsta, Inc.\n * All Rights Reserved.\n */', 'package')
 	}
+
+	format 'xml', {
+		target xmlFiles
+		eclipseWtp('xml')
+		trimTrailingWhitespace()
+		indentWithSpaces(2)
+	}
+
+	yaml {
+		target yamlFiles
+		prettier()
+		trimTrailingWhitespace()
+		indentWithSpaces(2)
+	}
+
+	format 'markdown', {
+		target markdownFiles
+		prettier()
+		trimTrailingWhitespace()
+		indentWithSpaces(2)
+	}
 }
+
+// apply spotlessApply before commit
+tasks.register('installPreCommitHook', Copy) {
+	from file('config/git-hooks/pre-commit')
+	into file('.git/hooks')
+	fileMode 0755
+}
+
+build.dependsOn installPreCommitHook
