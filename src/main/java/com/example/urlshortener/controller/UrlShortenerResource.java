@@ -18,10 +18,11 @@ public interface UrlShortenerResource {
   String PATH = "/api";
 
   @PostMapping("/shorten")
-  @Operation(summary = "Shorten a URL",description = "Creates a short code for the provided long URL.")
+  @Operation(summary = "Shorten a URL", description = "Creates a short code for the provided long URL.")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "URL successfully shortened"),
-      @ApiResponse(responseCode = "400", description = "Invalid input")
+      @ApiResponse(responseCode = "400", description = "Invalid input"),
+      @ApiResponse(responseCode = "409", description = "Custom code is already in use")
   })
   ResponseEntity<String> shortenUrl(
       @Parameter(description = "URL to be shortened", required = true)

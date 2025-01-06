@@ -2,12 +2,13 @@ package com.example.urlshortener.controller;
 
 import com.example.urlshortener.dto.UrlRequest;
 import com.example.urlshortener.service.UrlShortenerService;
-import java.net.URI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.net.URI;
 
 @RestController
 @Validated
@@ -18,7 +19,7 @@ public class UrlShortenerController implements UrlShortenerResource {
 
   @Override
   public ResponseEntity<String> shortenUrl(UrlRequest request) {
-    String shortCode = urlShortenerService.shortenUrl(request.getUrl());
+    String shortCode = urlShortenerService.shortenUrl(request.getUrl(), request.getCustomCode());
     return ResponseEntity.ok(shortCode);
   }
 
