@@ -1,25 +1,12 @@
 package com.example.urlshortener.repository;
 
-import com.example.urlshortener.model.UrlMapping;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
+import com.example.urlshortener.model.UrlEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
-public class UrlRepository {
-
-  private final Map<String, UrlMapping> urlMap = new ConcurrentHashMap<>();
-
-  public void save(UrlMapping urlMapping) {
-    urlMap.put(urlMapping.getShortCode(), urlMapping);
-  }
-
-  public Optional<UrlMapping> findByShortCode(String shortCode) {
-    return Optional.ofNullable(urlMap.get(shortCode));
-  }
-
-  public void deleteByShortCode(String shortCode) {
-    urlMap.remove(shortCode);
-  }
+public interface UrlRepository extends JpaRepository<UrlEntity, Long> {
+  Optional<UrlEntity> findByShortUrl(String shortUrl);
 }
