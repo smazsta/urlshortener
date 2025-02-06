@@ -2,6 +2,8 @@ package com.example.urlshortener.service;
 
 import com.example.urlshortener.model.UrlEntity;
 import com.example.urlshortener.repository.UrlRepository;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -15,6 +17,7 @@ public class UrlService {
     this.repository = repository;
   }
 
+  @CachePut(value = "urlCache", key = "#result")
   public String createShortUrl(String originalUrl) {
     String shortUrl = generateShortUrl(originalUrl);
     UrlEntity urlEntity = new UrlEntity(originalUrl, shortUrl);
@@ -23,6 +26,7 @@ public class UrlService {
     return shortUrl;
   }
 
+  @Cacheable(value = "urlCache", key = "#p0")
   public Optional<String> getOriginalUrl(String shortUrl) {
     return repository.findByShortUrl(shortUrl).map(UrlEntity::getOriginalUrl);
   }

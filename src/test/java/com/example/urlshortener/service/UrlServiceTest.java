@@ -54,7 +54,7 @@ class UrlServiceTest {
 
     Optional<String> result = urlService.getOriginalUrl(shortUrl);
 
-    assertNotNull(result);
+    assertTrue(result.isPresent());
     assertEquals(originalUrl, result.get());
     verify(urlRepository).findByShortUrl(any(String.class));
   }
